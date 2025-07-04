@@ -4,10 +4,12 @@ manifest:
       url-base: https://github.com/zephyrproject-rtos
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
+    - name: GammaKinematics
+      url-base: https://github.com/GammaKinematics
   projects:
     - name: zephyr
-      remote: zmkfirmware
-      revision: v3.5.0+zmk-fixes
+      url: https://github.com/GammaKinematics/zmk-zephyr
+      revision: v3.5.0+zmk-fixes+u0
       clone-depth: 1
       import:
         name-blocklist:
