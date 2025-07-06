@@ -18,6 +18,8 @@
 
 #include <zmk/debounce.h>
 
+#include <zmk/hall_effect.h>
+
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #define DT_DRV_COMPAT zmk_kscan_gpio_matrix
@@ -56,6 +58,9 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
     KSCAN_GPIO_GET_BY_IDX(DT_DRV_INST(inst_idx), row_gpios, idx)
 #define KSCAN_GPIO_COL_CFG_INIT(idx, inst_idx)                                                     \
     KSCAN_GPIO_GET_BY_IDX(DT_DRV_INST(inst_idx), col_gpios, idx)
+
+#define KSCAN_SWITCH_TYPE_MECH 0
+#define KSCAN_SWITCH_TYPE_HALL 1
 
 enum kscan_diode_direction {
     KSCAN_ROW2COL,
