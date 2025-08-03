@@ -1,7 +1,8 @@
 {
   "files.associations": {
     "*.overlay": "dts",
-    "*.keymap": "dts"
+    "*.keymap": "dts",
+    "ble_active_profile_changed.h": "c"
   },
   "python.analysis.include": ["app/scripts", "zephyr/scripts"],
   "[c]": {

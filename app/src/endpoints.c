@@ -16,7 +16,8 @@
 #include <zmk/usb_hid.h>
 #include <zmk/hog.h>
 #if IS_ENABLED(CONFIG_ZMK_ESB)
-#include <zmk/esb_hid.h>
+#include <zmk_feature_esb_transport/esb_hid.h>
+#include <zmk_feature_esb_transport/events/esb_conn_state_changed.h>
 #endif
 #include <zmk/event_manager.h>
 #include <zmk/events/ble_active_profile_changed.h>
@@ -26,9 +27,13 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
-#define DEFAULT_TRANSPORT                                                                          \
-    COND_CODE_1(IS_ENABLED(CONFIG_ZMK_ESB), (ZMK_TRANSPORT_ESB),                                   \
-                COND_CODE_1(IS_ENABLED(CONFIG_ZMK_BLE), (ZMK_TRANSPORT_BLE), (ZMK_TRANSPORT_USB)))
+#if IS_ENABLED(CONFIG_ZMK_ESB)
+#define DEFAULT_TRANSPORT ZMK_TRANSPORT_ESB
+#elif IS_ENABLED(CONFIG_ZMK_BLE)
+#define DEFAULT_TRANSPORT ZMK_TRANSPORT_BLE
+#else
+#define DEFAULT_TRANSPORT ZMK_TRANSPORT_USB
+#endif
 
 static struct zmk_endpoint_instance current_instance = {};
 static enum zmk_transport preferred_transport =
@@ -125,16 +130,8 @@ int zmk_endpoints_select_transport(enum zmk_transport transport) {
 }
 
 int zmk_endpoints_toggle_transport(void) {
-    enum zmk_transport new_transport;
-
-    if (preferred_transport == ZMK_TRANSPORT_USB) {
-        // Switch to whatever wireless is available
-        new_transport = is_esb_ready() ? ZMK_TRANSPORT_ESB : ZMK_TRANSPORT_BLE;
-    } else {
-        // Any wireless -> USB
-        new_transport = ZMK_TRANSPORT_USB;
-    }
-
+    enum zmk_transport new_transport =
+        (preferred_transport == ZMK_TRANSPORT_USB) ? ZMK_TRANSPORT_BLE : ZMK_TRANSPORT_USB;
     return zmk_endpoints_select_transport(new_transport);
 }
 
