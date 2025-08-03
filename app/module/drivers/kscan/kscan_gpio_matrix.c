@@ -18,7 +18,9 @@
 
 #include <zmk/debounce.h>
 
-#include <zmk/hall_effect.h>
+#if IS_ENABLED(CONFIG_ZMK_GK_HYBRID_MATRIX)
+#include <zmk_driver_gk_hall_effect/drivers/kscan/gk_hybrid_matrix.h>
+#endif
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
@@ -58,9 +60,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
     KSCAN_GPIO_GET_BY_IDX(DT_DRV_INST(inst_idx), row_gpios, idx)
 #define KSCAN_GPIO_COL_CFG_INIT(idx, inst_idx)                                                     \
     KSCAN_GPIO_GET_BY_IDX(DT_DRV_INST(inst_idx), col_gpios, idx)
-
-#define KSCAN_SWITCH_TYPE_MECH 0
-#define KSCAN_SWITCH_TYPE_HALL 1
 
 enum kscan_diode_direction {
     KSCAN_ROW2COL,
@@ -223,6 +222,17 @@ static void kscan_matrix_read_end(const struct device *dev) {
 static int kscan_matrix_read(const struct device *dev) {
     struct kscan_matrix_data *data = dev->data;
     const struct kscan_matrix_config *config = dev->config;
+
+#if IS_ENABLED(CONFIG_ZMK_GK_HYBRID_MATRIX)
+    for (int j = 0; j < data->inputs.len; j++) {
+        const struct kscan_gpio *in_gpio = &data->inputs.gpios[j];
+        int err = gpio_pin_set_dt(&in_gpio->spec, 1);
+        if (err) {
+            LOG_ERR("Failed to set output %i active: %i", in_gpio->index, err);
+            return err;
+        }
+    }
+#endif
 
     // Scan the matrix.
     for (int i = 0; i < config->outputs.len; i++) {
