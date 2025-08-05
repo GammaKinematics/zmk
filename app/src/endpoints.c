@@ -16,6 +16,7 @@
 #include <zmk/usb_hid.h>
 #include <zmk/hog.h>
 #if IS_ENABLED(CONFIG_ZMK_ESB)
+#include <zmk_feature_esb_transport/esb.h>
 #include <zmk_feature_esb_transport/esb_hid.h>
 #include <zmk_feature_esb_transport/events/esb_conn_state_changed.h>
 #endif
