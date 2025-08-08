@@ -34,6 +34,10 @@ int zmk_split_transport_peripheral_command_handler(
     LOG_DBG("");
 
     switch (cmd.type) {
+#if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_SWAPPING)
+    case ZMK_SPLIT_TRANSPORT_CENTRAL_CMD_TYPE_ROLE_SWITCH_RST:
+        return zmk_role_swapping_handle_rst_command(&cmd.data.role_switch_rst);
+#endif
     case ZMK_SPLIT_TRANSPORT_CENTRAL_CMD_TYPE_INVOKE_BEHAVIOR: {
         struct zmk_behavior_binding binding = {
             .param1 = cmd.data.invoke_behavior.param1,
@@ -55,10 +59,6 @@ int zmk_split_transport_peripheral_command_handler(
             LOG_ERR("Failed to invoke behavior %s: %d", binding.behavior_dev, err);
         }
     }
-#if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_SWAPPING)
-    case ZMK_SPLIT_TRANSPORT_CENTRAL_CMD_TYPE_ROLE_SWITCH_RST:
-        return zmk_role_swapping_handle_rst_command(&cmd.data.role_switch_rst);
-#endif
     default:
         LOG_WRN("Unhandled command type %d", cmd.type);
         return -ENOTSUP;
