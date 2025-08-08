@@ -10,6 +10,16 @@ config ZMK_SPLIT_BLE_PRIORITY
     help
         Lower number priorities transports are favored over higher numbers.
 
+config ZMK_SPLIT_BLE_ROLE_SWAPPING
+    bool "Enable dynamic BLE role swapping support"
+    depends on ZMK_SPLIT_BLE && CONFIG_SETTINGS
+    select ZMK_SPLIT_ROLE_CENTRAL
+    default n
+    help
+      Enable support for runtime role swapping between central and peripheral
+      roles based on battery levels. This requires an external module to 
+      provide the actual role switching implementation.
+
 # Added for backwards compatibility. New shields / board should set `ZMK_SPLIT_ROLE_CENTRAL` only.
 config ZMK_SPLIT_BLE_ROLE_CENTRAL
     bool
@@ -76,7 +86,7 @@ config ZMK_SPLIT_BLE_PREF_TIMEOUT
 
 endif # ZMK_SPLIT_ROLE_CENTRAL
 
-if !ZMK_SPLIT_ROLE_CENTRAL
+if !ZMK_SPLIT_ROLE_CENTRAL || ZMK_SPLIT_BLE_ROLE_SWAPPING
 
 config ZMK_SPLIT_BLE_PERIPHERAL_STACK_SIZE
     int "BLE split peripheral notify thread stack size"

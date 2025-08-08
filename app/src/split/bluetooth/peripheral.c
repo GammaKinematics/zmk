@@ -280,4 +280,6 @@ static int zmk_peripheral_ble_init(void) {
     return 0;
 }
 
+#if !IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_SWAPPING)
 SYS_INIT(zmk_peripheral_ble_init, APPLICATION, CONFIG_ZMK_BLE_INIT_PRIORITY);
+#endif
