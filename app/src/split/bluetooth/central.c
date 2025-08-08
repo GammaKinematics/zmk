@@ -1186,6 +1186,9 @@ static int split_central_bt_send_command(uint8_t source,
         struct central_cmd_wrapper wrapper = {.source = source, .cmd = cmd};
         return split_bt_invoke_behavior_payload(wrapper);
     }
+#if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_SWAPPING)
+    case ZMK_SPLIT_TRANSPORT_CENTRAL_CMD_TYPE_ROLE_SWITCH_RST:
+#endif
     case ZMK_SPLIT_TRANSPORT_CENTRAL_CMD_TYPE_POLL_EVENTS:
         return -ENOTSUP;
     default:

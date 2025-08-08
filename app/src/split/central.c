@@ -19,6 +19,10 @@
 #include <zmk/events/position_state_changed.h>
 #include <zmk/events/sensor_event.h>
 
+#if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_SWAPPING)
+#include <zmk_feature_split_ble_role_swapping/split/bluetooth/role_swapping.h>
+#endif
+
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 const struct zmk_split_transport_central *active_transport;
@@ -72,6 +76,10 @@ int zmk_split_transport_central_peripheral_event_handler(
 
         return raise_zmk_sensor_event(sensor_ev);
     }
+#if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_SWAPPING)
+    case ZMK_SPLIT_TRANSPORT_PERIPHERAL_EVENT_TYPE_ROLE_SWITCH_ACK:
+        return zmk_role_swapping_handle_ack_event(source, &ev.data.role_switch_ack);
+#endif
     default:
         LOG_WRN("GOT AN UNKNOWN EVENT TYPE %d", ev.type);
         return -ENOTSUP;

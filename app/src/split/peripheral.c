@@ -20,6 +20,10 @@
 #include <zephyr/init.h>
 #include <zephyr/logging/log.h>
 
+#if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_SWAPPING)
+#include <zmk_feature_split_ble_role_swapping/split/bluetooth/role_swapping.h>
+#endif
+
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 const struct zmk_split_transport_peripheral *active_transport;
@@ -51,6 +55,10 @@ int zmk_split_transport_peripheral_command_handler(
             LOG_ERR("Failed to invoke behavior %s: %d", binding.behavior_dev, err);
         }
     }
+#if IS_ENABLED(CONFIG_ZMK_SPLIT_BLE_ROLE_SWAPPING)
+    case ZMK_SPLIT_TRANSPORT_CENTRAL_CMD_TYPE_ROLE_SWITCH_RST:
+        return zmk_role_swapping_handle_rst_command(&cmd.data.role_switch_rst);
+#endif
     default:
         LOG_WRN("Unhandled command type %d", cmd.type);
         return -ENOTSUP;
